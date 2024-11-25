@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_25_215658) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_25_222218) do
+  create_table "report_logs", force: :cascade do |t|
+    t.integer "report_id", null: false
+    t.integer "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["report_id"], name: "index_report_logs_on_report_id"
+  end
+
   create_table "reports", force: :cascade do |t|
     t.datetime "date"
     t.integer "event_id"
@@ -20,4 +28,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_25_215658) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_foreign_key "report_logs", "reports"
 end
