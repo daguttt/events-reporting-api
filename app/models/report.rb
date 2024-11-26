@@ -1,4 +1,4 @@
 class Report < ApplicationRecord
-  enum :type [:attendance, :ticket_sales]
+  belongs_to :reportable, polymorphic: true
   enum :format [:pdf, :csv, :json]
 end

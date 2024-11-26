@@ -10,10 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_25_222218) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_26_001123) do
+  create_table "attendance_reports", force: :cascade do |t|
+    t.float "percentage"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "report_logs", force: :cascade do |t|
     t.integer "report_id", null: false
     t.integer "status"
+    t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["report_id"], name: "index_report_logs_on_report_id"
@@ -22,9 +29,17 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_25_222218) do
   create_table "reports", force: :cascade do |t|
     t.datetime "date"
     t.integer "event_id"
-    t.integer "user_id"
     t.integer "format"
-    t.integer "type"
+    t.integer "sold_tickets"
+    t.string "reportable_type", null: false
+    t.integer "reportable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["reportable_type", "reportable_id"], name: "index_reports_on_reportable"
+  end
+
+  create_table "ticket_reports", force: :cascade do |t|
+    t.integer "capacity"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
