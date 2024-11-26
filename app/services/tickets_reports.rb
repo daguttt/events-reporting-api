@@ -1,5 +1,5 @@
 class TicketServices
-  def self.createReport
+  def self.create_report
 
   end
 end
