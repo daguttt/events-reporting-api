@@ -41,3 +41,5 @@ group :development, :test do
 
   gem "dotenv"
 end
+
+gem "oas_rails"
