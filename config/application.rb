@@ -34,11 +34,11 @@ module EventsReportingApi
     # in config/environments, which are processed later.
     #
     # config.time_zone = "Central Time (US & Canada)"
-    # config.eager_load_paths << Rails.root.join("extras")
-
+    # config.eager_load_paths << Rails.root.join("extras")"
     # Only loads a smaller set of middleware suitable for API only apps.
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+    config.middleware.use ActionDispatch::Session::CookieStore, key: "_your_session_key", secret: "509e24d6b81dc8e517bac3da452f45ab8f6a55fc09c655f561023da6b485b2119a12ce788ffc841e7437981180ce7ee9550c6529ff08e3a31d85ef070bf978c8"
   end
 end
