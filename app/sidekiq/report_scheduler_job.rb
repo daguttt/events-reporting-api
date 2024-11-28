@@ -1,8 +1,12 @@
+require "prawn"
+require "prawn/table"
+
 class ReportSchedulerJob
   include Sidekiq::Job
 
-  def perform(event_id, frequency)
-    # TicketsService.createReport  --create the logic
+  def perform(event_id, frequency, format)
+    params = { event_id: event_id, format: format }
+    TicketsService.create_report(params)
     logger.info("report scheduled")
 
     # Determine the interval in seconds based on the frequency

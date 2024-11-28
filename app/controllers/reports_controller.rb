@@ -75,7 +75,7 @@ class ReportsController < ApplicationController
   def schedule
     event_id = schedule_report_params[:event_id]
     frequency = schedule_report_params[:frequency]
-    p [ "event_id", event_id ]
+    format = schedule_report_params[:format]
     # Check if the event exists
     event = EventsService.find_by_id(event_id)
     unless event
