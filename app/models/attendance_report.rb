@@ -1,3 +1,3 @@
 class AttendanceReport < ApplicationRecord
-  has_many :reports, as: :reportable
+  has_one :report, as: :reportable
 end
