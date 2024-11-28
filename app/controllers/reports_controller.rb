@@ -32,7 +32,7 @@ class ReportsController < ApplicationController
         }
       end
     when "tickets"
-      data = TicketServices.create_report(report_params)
+      data = TicketsService.create_report(report_params)
       case params[:format]&.downcase
       when "pdf"
         send_data(
