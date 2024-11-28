@@ -88,21 +88,22 @@ class ReportsController < ApplicationController
   # @summary Schedule the generation of a report
   # @tags Reports
   def schedule
-    event_id = 1
-    frequency = "weekly"
-
+    event_id = schedule_report_params[:event_id]
+    frequency = schedule_report_params[:frequency]
+    p [ "event_id", event_id ]
     # Check if the event exists
-    # event = Event.find_by(id: event_id)
-    # unless event
-    #   render json: { error: "Event not found" }, status: :not_found
-    #   return
-    # end
+    event = EventsService.find_by_id(event_id)
+    p [ "Event", event ]
+    unless event
+      render json: { error: "Event not found" }, status: :not_found
+      return
+    end
 
-    # # Check if the frequency is valid
-    # unless %w[daily weekly monthly].include?(frequency)
-    #   render json: { error: "Invalid frequency" }, status: :unprocessable_entity
-    #   return
-    # end
+    # Check if the frequency is valid
+    unless %w[daily weekly monthly].include?(frequency)
+      render json: { error: "Invalid frequency" }, status: :unprocessable_entity
+      return
+    end
 
     case frequency
 
@@ -124,5 +125,9 @@ class ReportsController < ApplicationController
   private
   def report_params
     params.permit(:type, :user_id, :format, :event_id, report: [ :format ])
+  end
+
+  def schedule_report_params
+    params.permit(:event_id, :frequency, :user_id, report: [:type, :format])
   end
 end
