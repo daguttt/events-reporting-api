@@ -6,7 +6,6 @@ require "prawn/table"
 
 class TicketServices
   def self.create_report(ticket_params)
-
     # raw_data = get_ticket_summary
     # total_tickets = raw_data["data"].total_tickets
     # sold_tickets = raw_data["data"].sold_tickets
@@ -69,7 +68,7 @@ class TicketServices
   private
   def self.generate_csv(ticket_report, report)
     CSV.generate(headers: true) do |csv|
-      csv << ["Ticket Report ID", "Total Tickets", "Event ID", "Format", "Sold Tickets", "Date", "Created At"]
+      csv << [ "Ticket Report ID", "Total Tickets", "Event ID", "Format", "Sold Tickets", "Date", "Created At" ]
 
       csv << [
         ticket_report.id,
@@ -100,7 +99,7 @@ class TicketServices
 
       pdf.table(data, header: true, row_colors: [ "dddddd", "ffffff" ], position: :center) do
         cells.padding = 12
-        cells.borders = [:bottom]
+        cells.borders = [ :bottom ]
         cells.border_width = 1
         row(0).font_style = :bold
       end
@@ -108,8 +107,8 @@ class TicketServices
   end
 
   def get_ticket_summary
-    uri = URI('asdas')
+    uri = URI("asdas")
     response_tkts = Net::HTTP.get(uri)
-    response_tkts_parsed = JSON.parse(response_tkts.body)
+    JSON.parse(response_tkts.body)
   end
 end
