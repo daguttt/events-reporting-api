@@ -14,9 +14,7 @@ class TicketServices
     total_tickets = 100
     sold_tickets = 70
 
-
-    # EventsService.find_by_id(ticket_params[:event_id]) != nil
-    if true
+    if EventsService.find_by_id(ticket_params[:event_id]) != nil
       new_ticket_report = TicketReport.create(capacity: total_tickets)
 
       current_date = Time.now
