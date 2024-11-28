@@ -48,7 +48,7 @@ class AttendanceService
       [ "Sold Tickets", sold_tickets ],
       [ "True Attendance", summary["true_attendees"] ],
       [ "False Attendance", summary["false_attendees"] ],
-      [ "Percentage", percentage ]
+      [ "Percentage", percentage.to_s + "%" ]
     ]
 
     pdf.table(table_data, header: true, row_colors: [ "dddddd", "ffffff" ], position: :center) do
