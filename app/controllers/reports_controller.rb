@@ -25,7 +25,7 @@ class ReportsController < ApplicationController
   def inspect_report
     report_id = params[:report_id]
     puts report_id
-    user_id = params[:user_id] # Asegúrate de recibir el parámetro
+    user_id = params[:user_id]
     result = RecordServices.inspect_report(report_id, user_id)
     if result[:error]
       render json: { error: result[:error] }, status: :not_found
