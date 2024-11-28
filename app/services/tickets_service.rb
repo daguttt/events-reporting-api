@@ -4,7 +4,7 @@ require "csv"
 require "prawn"
 require "prawn/table"
 
-class TicketServices
+class TicketsService
   def self.create_report(ticket_params)
     # raw_data = get_ticket_summary
     # total_tickets = raw_data["data"].total_tickets

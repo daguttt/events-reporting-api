@@ -1,0 +1,6 @@
+# create attendance report
+
+@host = "http://localhost:3000"
+
+POST {{host}}/events/2/reports
+Content-Type: application/json
