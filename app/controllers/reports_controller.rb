@@ -5,9 +5,9 @@ class ReportsController < ApplicationController
     type = params[:type]
     case type
     when "attendance"
-      AttandanceService.createReport
+      AttendanceService.create_report(params)
     when "tickets"
-      TicketServices.createReport
+      TicketServices.create_report
     end
   end
 
@@ -19,5 +19,9 @@ class ReportsController < ApplicationController
   # @summary Schedule the generation of a report
   # @tags Reports
   def schedule
+  end
+
+  private
+  def attendance_report_params
   end
 end
