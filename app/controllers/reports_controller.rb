@@ -5,7 +5,32 @@ class ReportsController < ApplicationController
     type = params[:type]
     case type
     when "attendance"
-      AttandanceService.create_report()
+      data = AttendanceService.create_report(report_params)
+      case params[:format]&.downcase
+      when "pdf"
+        send_data(
+            data,
+            filename: "attendance_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
+            type: "application/pdf",
+            disposition: "attachment"
+          )
+
+      when "csv"
+        send_data(
+            data,
+            filename: "attendance_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.csv",
+            type: "text/csv",
+            disposition: "attachment"
+          )
+      when "json"
+        render json: {
+        success: true,
+        message: "Report and Attendance Report created successfully",
+        data: {
+            attendance_report: data
+          }
+        }
+      end
     when "tickets"
       data = TicketServices.create_report(report_params)
       case params[:format]&.downcase
@@ -33,6 +58,10 @@ class ReportsController < ApplicationController
           }
         }
       end
+    else
+      render json: {
+        error: "invalid report type"
+      }, status: :bad_request
     end
   end
 
