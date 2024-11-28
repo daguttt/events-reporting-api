@@ -1,3 +1,5 @@
+require "net/http"
+
 class EventsService
   MONOLITH_URL = "#{ENV.fetch("MONOLITH_URL")}/api/v1"
   def self.find_by_id(id)
