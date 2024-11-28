@@ -78,7 +78,6 @@ class ReportsController < ApplicationController
     p [ "event_id", event_id ]
     # Check if the event exists
     event = EventsService.find_by_id(event_id)
-    p [ "Event", event ]
     unless event
       render json: { error: "Event not found" }, status: :not_found
       return
@@ -90,21 +89,7 @@ class ReportsController < ApplicationController
       return
     end
 
-    case frequency
-
-    when "daily"
-      # Schedule the job to run again every day at the same time (i.e., 24 hours later).
-      ReportSchedulerJob.perform_async(event_id, "daily")
-    when "weekly"
-      # Schedule the job to run again every week at the same day and time.
-      ReportSchedulerJob.perform_async(event_id, "weekly")
-    when "monthly"
-      # Schedule the job to run again every month at the same day and time.
-      ReportSchedulerJob.perform_async(event_id, "monthly")
-    else
-      # Handle the case where an unsupported frequency is passed
-      logger.error("Unsupported frequency: #{frequency} for event ID #{event_id}. Job will not be rescheduled.")
-    end
+    ReportSchedulerJob.perform_async(event_id, frequency, format)
   end
 
   private
