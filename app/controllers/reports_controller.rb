@@ -23,7 +23,7 @@ class ReportsController < ApplicationController
   end
 
   def inspect_report
-    report_id = params[:event_id]
+    report_id = params[:report_id]
     puts report_id
     user_id = params[:user_id] # Asegúrate de recibir el parámetro
     result = RecordServices.inspect_report(report_id, user_id)
