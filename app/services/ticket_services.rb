@@ -1,6 +1,8 @@
 require "net/http"
 require "uri"
 require "csv"
+require "prawn"
+require "prawn/table"
 
 class TicketServices
   def self.create_report(ticket_params)
@@ -41,6 +43,20 @@ class TicketServices
         created_at: new_report.created_at
             }
       when "pdf"
+        pdf_data = generate_pdf(new_ticket_report, new_report)
+
+        {
+          ticket_report: {
+            id: new_ticket_report.id,
+            total_tickets: new_ticket_report.capacity,
+            event_id: new_report.event_id,
+            format: new_report.format,
+            sold_tickets: new_report.sold_tickets,
+            date: new_report.date,
+            created_at: new_report.created_at
+          },
+          pdf_data: pdf_data
+        }
       when "csv"
         {
         success: true,
@@ -67,6 +83,30 @@ class TicketServices
         report.created_at
       ]
     end
+  end
+
+  def self.generate_pdf(new_ticket_report, new_report)
+    Prawn::Document.new do |pdf|
+      pdf.text "Ticket Report", size: 20, style: :bold
+      pdf.move_down 20
+
+      # Generar la tabla
+      data = [
+        [ "Field", "Value" ],
+        [ "Event ID", new_report.event_id.to_s ],
+        [ "Total Tickets", new_ticket_report.capacity.to_s ],
+        [ "Sold Tickets", new_report.sold_tickets.to_s ],
+        [ "Date", new_report.date.to_s ],
+        [ "Created At", new_report.created_at.to_s ]
+      ]
+
+      pdf.table(data, header: true, row_colors: [ "dddddd", "ffffff" ], position: :center) do
+        cells.padding = 12
+        cells.borders = [:bottom]
+        cells.border_width = 1
+        row(0).font_style = :bold
+      end
+    end.render
   end
 
   def get_ticket_summary

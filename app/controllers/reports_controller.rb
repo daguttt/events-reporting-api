@@ -8,6 +8,12 @@ class ReportsController < ApplicationController
       data = TicketServices.create_report(report_params)
       case params[:format]&.downcase
       when "pdf"
+        send_data(
+            data[:pdf_data], # Aquí se usa el contenido generado por el servicio
+            filename: "ticket_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
+            type: "application/pdf",
+            disposition: "attachment"
+          )
 
       when "csv"
         send_data(
