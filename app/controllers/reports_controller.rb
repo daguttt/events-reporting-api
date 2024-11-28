@@ -9,7 +9,7 @@ class ReportsController < ApplicationController
       case params[:format]&.downcase
       when "pdf"
         send_data(
-            data, # Aquí se usa el contenido generado por el servicio
+            data,
             filename: "attendance_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
             type: "application/pdf",
             disposition: "attachment"
@@ -17,13 +17,12 @@ class ReportsController < ApplicationController
 
       when "csv"
         send_data(
-            data, # Aquí se usa el contenido generado por el servicio
+            data,
             filename: "attendance_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.csv",
             type: "text/csv",
             disposition: "attachment"
           )
       when "json"
-        p [ "data", data ]
         render json: {
         success: true,
         message: "Report and Attendance Report created successfully",
