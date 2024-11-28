@@ -11,7 +11,7 @@ gem "prawn"
 
 gem "prawn-table"
 
-
+gem "dotenv"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
 # Use Redis adapter to run Action Cable in production
@@ -44,8 +44,6 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
-
-  gem "dotenv"
 end
 
 gem "oas_rails"

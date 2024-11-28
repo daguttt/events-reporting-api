@@ -5,7 +5,7 @@ class ReportsController < ApplicationController
     type = params[:type]
     case type
     when "attendance"
-      data = AttendanceService.create_report(params)
+      data = AttendanceService.create_report(report_params)
       case params[:format]&.downcase
       when "pdf"
         send_data(
@@ -32,7 +32,32 @@ class ReportsController < ApplicationController
         }
       end
     when "tickets"
-      TicketServices.create_report
+      data = TicketServices.create_report(report_params)
+      case params[:format]&.downcase
+      when "pdf"
+        send_data(
+            data[:pdf_data], # Aquí se usa el contenido generado por el servicio
+            filename: "ticket_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
+            type: "application/pdf",
+            disposition: "attachment"
+          )
+
+      when "csv"
+        send_data(
+            data[:csv_data], # Aquí se usa el contenido generado por el servicio
+            filename: "ticket_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.csv",
+            type: "text/csv",
+            disposition: "attachment"
+          )
+      when "json"
+        render json: {
+        success: true,
+        message: "Report and Ticket Report created successfully",
+        data: {
+            ticket_report: data
+          }
+        }
+      end
     end
   end
 
@@ -47,7 +72,7 @@ class ReportsController < ApplicationController
   end
 
   private
-  def attendance_report_params
+  def report_params
     params.permit(:type, :user_id, :format, :event_id, report: [ :format ])
   end
 end
