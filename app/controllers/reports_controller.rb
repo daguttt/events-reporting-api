@@ -58,6 +58,10 @@ class ReportsController < ApplicationController
           }
         }
       end
+    else
+      render json: {
+        error: "invalid report type"
+      }, status: :bad_request
     end
   end
 
