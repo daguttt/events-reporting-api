@@ -50,6 +50,8 @@ class ReportsController < ApplicationController
     render json: logs, status: :ok
   end
 
+  # @summary Get reports history
+  # @tags History
   def get_reports
     reports = RecordServices.get_reports
     render json: reports, status: :ok
@@ -60,15 +62,23 @@ class ReportsController < ApplicationController
   def schedule
   end
 
+  # @summary Get a report with id and generate the file report
+  # @tags History
   def inspect_report
     report_id = params[:report_id]
-    puts report_id
     user_id = params[:user_id]
     result = RecordServices.inspect_report(report_id, user_id)
     if result[:error]
       render json: { error: result[:error] }, status: :not_found
     else
-      render json: result, status: :ok
+      # render json: result, status: :ok
+      puts result
+      send_data(
+        result[:data],
+        filename: "ticket_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
+        type: "application/pdf",
+        disposition: "attachment"
+      )
     end
   end
 

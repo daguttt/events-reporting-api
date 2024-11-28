@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   put "/events/:event_id/reports/schedule" => "reports#schedule", as: :event_reports_schedule
   get "/reports/logs" => "reports#get_logs", as: :event_reports_logs
   get "/reports/history" => "reports#get_reports", as: :event_record_reports
-  get "/reports/:report_id" => "reports#inspect_report"
+  get "/reports/:report_id/user/:user_id" => "reports#inspect_report"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

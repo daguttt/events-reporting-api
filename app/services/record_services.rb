@@ -28,7 +28,7 @@ class RecordServices
     return { error: "Report not found" } unless report
     case report.format&.downcase
     when "pdf"
-      # generate_pdf(report)
+      data = GenerateFilesServices.generate_pdf(report, report)
     when "csv"
       # generate_csv(report)
     else
@@ -38,7 +38,8 @@ class RecordServices
     {
       message: "Report processed successfully",
       report: report.as_json,
-      log: log.as_json
+      log: log.as_json,
+      data: data
     }
   end
 end
