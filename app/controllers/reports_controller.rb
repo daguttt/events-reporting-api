@@ -70,21 +70,6 @@ class ReportsController < ApplicationController
   def get_history
   end
 
-  def delete
-    event_id = 1
-    # Loop through all jobs in the Scheduled Set
-    Sidekiq::ScheduledSet.new.each do |job|
-      # Check if the job's arguments match the ones you're looking for
-      if job.args[0] == event_id
-        # Found a matching job, so you can delete it
-        job.delete
-        logger.info("Job with JID #{job.jid} has been deleted. Event ID: #{event_id}")
-        return job.jid  # Optionally return the JID for reference
-      end
-    end
-  end
-
-
   # @summary Schedule the generation of a report
   # @tags Reports
   def schedule
