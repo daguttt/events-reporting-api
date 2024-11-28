@@ -10,10 +10,16 @@ class TicketServices
     # total_tickets = raw_data["data"].total_tickets
     # sold_tickets = raw_data["data"].sold_tickets
 
-    total_tickets = 100
-    sold_tickets = 70
 
-    if EventsService.find_by_id(ticket_params[:event_id]) != nil
+
+
+    if true || EventsService.find_by_id(ticket_params[:event_id]) != nil
+      tickets_summary = get_ticket_summary(ticket_params[:event_id])
+
+
+      total_tickets = tickets_summary["total_tickets"]
+      sold_tickets = tickets_summary["sold_tickets"]
+
       new_ticket_report = TicketReport.create(capacity: total_tickets)
 
       current_date = Time.now
@@ -106,9 +112,9 @@ class TicketServices
     end.render
   end
 
-  def get_ticket_summary
-    uri = URI("asdas")
-    response_tkts = Net::HTTP.get(uri)
+  def self.get_ticket_summary(event_id)
+    uri = URI("http://127.0.0.1:3034/events/#{event_id}/tickets/summary")
+    response_tkts = Net::HTTP.get_response(uri)
     JSON.parse(response_tkts.body)
   end
 end
