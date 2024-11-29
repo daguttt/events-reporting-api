@@ -16,7 +16,7 @@ class ReportSchedulerJob
 
     # Schedule the next job if interval_in_seconds is greater than 0
     if interval_in_seconds > 0
-      find_and_cancel_job(event_id)
+      find_and_cancel_job(event_id: event_id, format: format)
       schedule_next_job(interval_in_seconds, event_id, frequency, format)
     else
       logger.info("No rescheduling necessary.")
@@ -26,11 +26,11 @@ class ReportSchedulerJob
   private
 
   # Method to find and cancel an existing scheduled job
-  def find_and_cancel_job(event_id)
+  def find_and_cancel_job(event_id:, format:)
     # Loop through all jobs in the Scheduled Set
     Sidekiq::ScheduledSet.new.each do |job|
       # Check if the job's arguments match the ones you're looking for
-      if job.args[0] == event_id
+      if job.args[0] == event_id && job.args[2] == format
         # Found a matching job, so you can delete it
         job.delete
         logger.info("Job with JID #{job.jid} has been deleted. Event ID: #{event_id}")
