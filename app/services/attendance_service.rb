@@ -1,6 +1,8 @@
 require "net/http"
 require "csv"
 class AttendanceService
+  ATTENDANCE_URL = "#{ENV.fetch("ATTENDANCE_URL")}"
+
   def self.create_report(params)
     event_id = params[:event_id]
     format = params[:format]
@@ -73,7 +75,6 @@ class AttendanceService
     { id: attendance_report.id, name: get_event["name"], event_id: get_event["id"], date: get_event["date"], sold_tickets: sold_tickets, true_attendees: summary["true_attendees"], false_attendees: summary["false_attendees"], percentage: percentage }
   end
 
-  ATTENDANCE_URL = "#{ENV.fetch("ATTENDANCE_URL")}"
   def self.get_attendance_summary(event_id:)
     uri = URI("#{ATTENDANCE_URL}/events/#{event_id}/attendees/summary/assistants")
     response = Net::HTTP.get_response(uri)
