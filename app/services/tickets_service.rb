@@ -62,6 +62,8 @@ class TicketsService
         csv_data: generate_csv(new_ticket_report, new_report) # Generar CSV
       }
       end
+    else
+      raise "Event not found"
     end
   end
 
