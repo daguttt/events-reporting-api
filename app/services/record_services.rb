@@ -22,15 +22,26 @@ class RecordServices
     end
   end
 
-  def self.inspect_report(report_id, user_id)
+  def self.inspect_report(report, user_id, format)
     return { error: "user_id cannot be empty" } if user_id.blank?
-    report = Report.find_by(id: report_id)
     return { error: "Report not found" } unless report
-    case report.format&.downcase
+    event = EventsService.find_by_id(report[:event_id])
+    type = report.reportable_type
+
+    case format
     when "pdf"
-      data = GenerateFilesServices.generate_pdf(report, report)
+      if type == "AttendanceReport"
+        data = GenerateFilesServices.generate_pdf("attendance", report, event)
+      elsif type == "TicketReport"
+        data = GenerateFilesServices.generate_pdf("tickets", report, event)
+      end
     when "csv"
-      # generate_csv(report)
+      puts "generando csv"
+      if type == "AttendanceReport"
+        data = GenerateFilesServices.generate_csv("attendance", report, event)
+      elsif type == "TicketReport"
+        data = GenerateFilesServices.generate_csv("tickets", report, event)
+      end
     else
       return { message: "Format not supported" }
     end

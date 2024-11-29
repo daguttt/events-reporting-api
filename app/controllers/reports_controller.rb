@@ -85,18 +85,34 @@ class ReportsController < ApplicationController
   def inspect_report
     report_id = params[:report_id]
     user_id = params[:user_id]
-    result = RecordServices.inspect_report(report_id, user_id)
+    report = Report.find_by(id: report_id)
+    format = report.format&.downcase
+    puts format
+    result = RecordServices.inspect_report(report, user_id, format)
     if result[:error]
       render json: { error: result[:error] }, status: :not_found
     else
-      # render json: result, status: :ok
-      puts result
-      send_data(
+      if format == "pdf"
+        send_data(
         result[:data],
-        filename: "ticket_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
+        filename: "report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
         type: "application/pdf",
         disposition: "attachment"
       )
+      elsif format == "csv"
+        send_data(
+        result[:data],
+        filename: "report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
+        type: "text/csv",
+        disposition: "attachment"
+        )
+      elsif format == "json"
+
+      else
+        { message: "Format not supported" }
+      end
+
+
     end
   end
 

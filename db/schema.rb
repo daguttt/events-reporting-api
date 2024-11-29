@@ -10,11 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_26_001123) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_29_133842) do
   create_table "attendance_reports", force: :cascade do |t|
     t.float "percentage"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "true_attendees", null: false
+    t.integer "false_attendees", null: false
   end
 
   create_table "report_logs", force: :cascade do |t|

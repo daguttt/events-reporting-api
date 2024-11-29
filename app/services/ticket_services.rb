@@ -37,7 +37,7 @@ class TicketServices
         created_at: new_report.created_at
             }
       when "pdf"
-        pdf_data = GenerateFilesServices.generate_pdf("tickets", new_report)
+        pdf_data = GenerateFilesServices.generate_pdf("tickets", new_report, event)
 
         {
           ticket_report: {
@@ -56,7 +56,7 @@ class TicketServices
         success: true,
         ticket_report: new_ticket_report,
         report: new_report,
-        csv_data: GenerateFilesServices.generate_csv(new_ticket_report, new_report) # Generar CSV
+        csv_data: GenerateFilesServices.generate_csv("tickets", new_report, event) # Generar CSV
       }
       end
     end
