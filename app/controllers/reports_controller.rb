@@ -1,16 +1,13 @@
 class ReportsController < ApplicationController
-  # @summary Creates an attendance or ticket report 
-  # @description This endpoint generates a report based on the type and format specified in the request. 
-  # @tags Reports
-  # @param [String] type body - The type of report to generate. Options: "attendance" or "tickets".
-  # @param [String] format body - The format of the report. Options: "pdf", "csv", or "json".
-  # @param [Integer] user_id body - The ID of the user requesting the report.
-  # @example request body application/json
-  #   {
-  #     "type": "attendance",
-  #     "format": "pdf",
-  #     "user_id": 2
-  #   }
+  # @summary Create a report
+  # @tags reports
+  # @request_body Create a report. Needs to include`user_id | format | type`. [!Report]
+  # @request_body_example basic user [Hash] {"user_id": 1,"format": "pdf","type": "attendance//ticket" }
+  # @response event_id not found (404) [Hash{succes: Boolean, message: String}]
+  # @response Return different types of responses depending on the format you choose. If you choose pdf or csv, the response creates a file; if json is chosen, the full response (200) [Hash{success: Boolean, message: String, data: Hash{id: Integer, total_tickets: Integer, event_id: Integer, format: String, sold_tickets: Integer, date: DateTime, created_at: DateTime }}]
+  # @response_example Placeholder (200) [{"success": true, message: "Report and Attendance Report created successfully", data: {id: 21, total_tickets: 100, event_id: 1, format: "json", sold_tickets: 70, date: "2024-11-28T18:28:27.887Z", created_at: "2024-11-28T18:28:27.903Z" }}]
+  # @response Invalid report type (400) [Hash{error: String}]
+  # @response_example Placeholder (400) [{ error: "invalid report type" }]
   def create
     type = params[:type]
     case type
