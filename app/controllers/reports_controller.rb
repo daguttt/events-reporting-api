@@ -98,10 +98,7 @@ class ReportsController < ApplicationController
   end
 
   def schedule_report_params
-    params.require(:event_id)
-    params.require(:frequency)
-    params.require(:user_id)
-    params.require(:format)
-    params.permit(:event_id, :frequency, :user_id, :format, report: [ :type, :format ])
+    params.require([ :event_id, :frequency, :user_id, :format ])
+    params.permit(:event_id, :frequency, :user_id, :format, report: {})
   end
 end
