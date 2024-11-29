@@ -72,6 +72,18 @@ class ReportsController < ApplicationController
 
   # @summary Schedule the generation of a report
   # @tags Reports
+  # @request_body The parameters for scheduling a report [!Hash{ frequency: String, user_id: Integer, format: String, report: Hash}]
+  # @request_body_example A complete request to schedule a report [Hash] { frequency: "daily", user_id: 2, format: "pdf", report: {}}
+
+  # @response Event not found (404) [Hash{success: Boolean, message: String}]
+  # @response_example event not found (404) [{ success: false, message: "Event not found" }]
+
+  # @response Invalid frequency (422) [Hash{success: Boolean, message: String}]
+  # @response_example invalid frequency (422) [{ success: false, message: "Invalid frequency" }]
+
+  # @response Report scheduled successfully (200) [Hash{success: Boolean, message: String}]
+  # @response_example scheduled successfully (200) [{ success: true, message: "Report scheduled successfully" }]
+
   def schedule
     event_id = schedule_report_params[:event_id]
     frequency = schedule_report_params[:frequency]
@@ -90,6 +102,7 @@ class ReportsController < ApplicationController
     end
 
     ReportSchedulerJob.perform_async(event_id, frequency, format)
+    render json: { success: true, message: "Report scheduled successfully" }, status: :ok
   end
 
   private
