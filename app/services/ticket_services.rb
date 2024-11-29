@@ -8,11 +8,10 @@ class TicketServices
     # total_tickets = raw_data["data"].total_tickets
     # sold_tickets = raw_data["data"].sold_tickets
 
-    total_tickets = 100
-    sold_tickets = 70
-
-    if EventsService.find_by_id(ticket_params[:event_id]) != nil
-      new_ticket_report = TicketReport.create(capacity: total_tickets)
+    sold_tickets = 120
+    event = EventsService.find_by_id(ticket_params[:event_id])
+    if event != nil
+      new_ticket_report = TicketReport.create(capacity: event["tickets_quantity"])
 
       current_date = Time.now
 
@@ -25,7 +24,7 @@ class TicketServices
         date: current_date,
       )
 
-      # log = new_ticket_report.report.report_logs.create(status: :created, user_id: ticket_params[:user_id])
+      new_ticket_report.report.report_logs.create(status: :created, user_id: ticket_params[:user_id])
       case ticket_params[:format]&.downcase
       when "json"
         {
@@ -38,7 +37,7 @@ class TicketServices
         created_at: new_report.created_at
             }
       when "pdf"
-        pdf_data = GenerateFilesServices.generate_pdf(new_ticket_report, new_report)
+        pdf_data = GenerateFilesServices.generate_pdf("tickets", new_report)
 
         {
           ticket_report: {

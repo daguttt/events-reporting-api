@@ -3,26 +3,50 @@ class GenerateFilesServices
   require "prawn"
   require "prawn/table"
 
-  def self.generate_pdf(new_ticket_report, new_report)
+  def self.generate_pdf(type, report)
     Prawn::Document.new do |pdf|
-      pdf.text "Ticket Report", size: 20, style: :bold
-      pdf.move_down 20
+      if type== "tickets"
+        pdf.text "Ticket Report", size: 20, style: :bold
+        pdf.move_down 20
 
-      # Generar la tabla
-      data = [
-        [ "Field", "Value" ],
-        [ "Event ID", "1" ],
-        [ "Total Tickets", "100" ],
-        [ "Sold Tickets", "15" ],
-        [ "Date", "2024-12-12" ],
-        [ "Created At", Time.now.to_s ]
-      ]
+        data = [
+          [ "Field", "Value" ],
+          [ "Event ID", report.event_id.to_s ],
+          [ "Total Tickets", report.reportable.capacity.to_s ],
+          [ "Sold Tickets", report.sold_tickets.to_s ],
+          [ "Date", report.date.to_s ],
+          [ "Created At", Time.now.to_s ]
+        ]
 
-      pdf.table(data, header: true, row_colors: [ "dddddd", "ffffff" ], position: :center) do
-        cells.padding = 12
-        cells.borders = [ :bottom ]
-        cells.border_width = 1
-        row(0).font_style = :bold
+        pdf.table(data, header: true, row_colors: [ "dddddd", "ffffff" ], position: :center) do
+          cells.padding = 12
+          cells.borders = [ :bottom ]
+          cells.border_width = 1
+          row(0).font_style = :bold
+        end
+      elsif type=="attendance"
+        pdf.text "Attendance Report", size: 24, style: :bold, align: :center
+        pdf.move_down 20
+        puts report
+        puts report.reportable
+        table_data = [
+          [ "Attribute", "Value" ],
+          [ "ID", attendance_report.id ],
+          [ "Event ID", get_event["id"] ],
+          [ "Event Name", get_event["name"] ],
+          [ "Event Date", get_event["date"] ],
+          [ "Sold Tickets", sold_tickets ],
+          [ "True Attendance", summary["true_attendees"] ],
+          [ "False Attendance", summary["false_attendees"] ],
+          [ "Percentage", percentage.to_s + "%" ]
+        ]
+
+        pdf.table(table_data, header: true, row_colors: [ "dddddd", "ffffff" ], position: :center) do
+          cells.padding = 12
+          cells.borders = [ :bottom ]
+          cells.border_width = 1
+          row(0).font_style = :bold
+        end
       end
     end.render
   end
