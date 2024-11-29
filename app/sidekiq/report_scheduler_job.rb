@@ -1,6 +1,3 @@
-require "prawn"
-require "prawn/table"
-
 class ReportSchedulerJob
   include Sidekiq::Job
 
