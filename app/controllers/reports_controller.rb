@@ -1,6 +1,16 @@
 class ReportsController < ApplicationController
-  # @summary Creates an attendance or ticket report
+  # @summary Creates an attendance or ticket report 
+  # @description This endpoint generates a report based on the type and format specified in the request. 
   # @tags Reports
+  # @param [String] type body - The type of report to generate. Options: "attendance" or "tickets".
+  # @param [String] format body - The format of the report. Options: "pdf", "csv", or "json".
+  # @param [Integer] user_id body - The ID of the user requesting the report.
+  # @example request body application/json
+  #   {
+  #     "type": "attendance",
+  #     "format": "pdf",
+  #     "user_id": 2
+  #   }
   def create
     type = params[:type]
     case type
