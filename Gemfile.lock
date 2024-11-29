@@ -145,6 +145,7 @@ GEM
       ast (~> 2.4.1)
       racc
     pdf-core (0.10.0)
+    pg (1.5.9)
     prawn (2.5.0)
       matrix (~> 0.4)
       pdf-core (~> 0.10.0)
@@ -274,6 +275,7 @@ DEPENDENCIES
   debug
   dotenv
   oas_rails
+  pg (~> 1.1)
   prawn
   prawn-table
   puma (>= 5.0)
