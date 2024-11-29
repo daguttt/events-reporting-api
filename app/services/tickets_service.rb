@@ -6,22 +6,11 @@ require "prawn/table"
 
 class TicketsService
   def self.create_report(ticket_params)
-    # raw_data = get_ticket_summary
-    # total_tickets = raw_data["data"].total_tickets
-    # sold_tickets = raw_data["data"].sold_tickets
-
-
-
-
     if true || EventsService.find_by_id(ticket_params[:event_id]) != nil
-      # tickets_summary = get_ticket_summary(ticket_params[:event_id])
+      tickets_summary = get_ticket_summary(ticket_params[:event_id])
+      total_tickets = tickets_summary["total_tickets"]
+      sold_tickets = tickets_summary["sold_tickets"]
 
-
-      # total_tickets = tickets_summary["total_tickets"]
-      # sold_tickets = tickets_summary["sold_tickets"]
-
-      total_tickets = 100
-      sold_tickets = 10
       new_ticket_report = TicketReport.create(capacity: total_tickets)
 
       current_date = Time.now
@@ -37,7 +26,7 @@ class TicketsService
 
       puts new_report.inspect
 
-      # log = new_ticket_report.report.report_logs.create(status: :created, user_id: ticket_params[:user_id])
+      log = new_ticket_report.report.report_logs.create(status: :created, user_id: ticket_params[:user_id])
       case ticket_params[:format]&.downcase
       when "json"
         {
@@ -117,7 +106,7 @@ class TicketsService
   end
 
   def self.get_ticket_summary(event_id)
-    uri = URI("http://127.0.0.1:3034/events/#{event_id}/tickets/summary")
+    uri = URI("http://127.0.0.1:3003/events/#{event_id}/tickets/summary")
     response_tkts = Net::HTTP.get_response(uri)
     JSON.parse(response_tkts.body)
   end
