@@ -15,21 +15,21 @@ class AttendanceService
         event_id: event_id,
         format: format,
         sold_tickets: sold_tickets
-        )
+      )
 
-        attendance_report.report.report_logs.create(status: :created, user_id: user_id)
-        get_event = EventsService.find_by_id(event_id)
+      attendance_report.report.report_logs.create(status: :created, user_id: user_id)
+      get_event = EventsService.find_by_id(event_id)
 
-        case format
-        when "pdf"
-          generate_pdf(get_event, sold_tickets, summary, percentage, attendance_report)
-        when "csv"
-          generate_csv(get_event, sold_tickets, summary, percentage, attendance_report)
-        when "json"
-          generate_json(get_event, sold_tickets, summary, percentage, attendance_report)
-        end
+      case format
+      when "pdf"
+        generate_pdf(get_event, sold_tickets, summary, percentage, attendance_report)
+      when "csv"
+        generate_csv(get_event, sold_tickets, summary, percentage, attendance_report)
+      when "json"
+        generate_json(get_event, sold_tickets, summary, percentage, attendance_report)
+      end
     else
-        raise "Event not found"
+      raise "Event not found"
     end
   end
 
