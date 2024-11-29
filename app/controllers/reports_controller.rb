@@ -50,7 +50,7 @@ class ReportsController < ApplicationController
             filename: "ticket_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
             type: "application/pdf",
             disposition: "attachment"
-            )
+          )
 
       when "csv"
         send_data(
