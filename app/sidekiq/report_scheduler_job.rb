@@ -20,7 +20,7 @@ class ReportSchedulerJob
     # Schedule the next job if interval_in_seconds is greater than 0
     if interval_in_seconds > 0
       find_and_cancel_job(event_id)
-      schedule_next_job(interval_in_seconds, event_id, frequency)
+      schedule_next_job(interval_in_seconds, event_id, frequency, format)
     else
       logger.info("No rescheduling necessary.")
     end
@@ -43,12 +43,12 @@ class ReportSchedulerJob
   end
 
   # Helper method to reschedule the job at a fixed interval
-  def schedule_next_job(interval_in_seconds, event_id, frequency)
+  def schedule_next_job(interval_in_seconds, event_id, frequency, format)
     # Calculate the next run time by adding the interval (in seconds) to the current time
     next_run_time = Time.now + interval_in_seconds
 
     # Schedule the next job at the exact time (this keeps it consistent)
-    self.class.perform_at(next_run_time, event_id, frequency)
+    self.class.perform_at(next_run_time, event_id, frequency, format)
 
     # Output the next scheduled time for logging or debugging
     logger.info("Next #{frequency} job scheduled at: #{next_run_time}")
