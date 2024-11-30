@@ -6,63 +6,61 @@ require "prawn/table"
 
 class TicketsService
   def self.create_report(ticket_params)
-    if true || EventsService.find_by_id(ticket_params[:event_id]) != nil
-      tickets_summary = get_ticket_summary(ticket_params[:event_id])
-      total_tickets = tickets_summary["total_tickets"]
-      sold_tickets = tickets_summary["sold_tickets"]
+    # Validate event existance
+    found_event = EventsService.find_by_id(ticket_params[:event_id])
+    raise "Event not found" unless found_event
 
-      new_ticket_report = TicketReport.create(capacity: total_tickets)
+    tickets_summary = get_ticket_summary(ticket_params[:event_id])
+    total_tickets = tickets_summary["total_tickets"]
+    sold_tickets = tickets_summary["sold_tickets"]
 
-      current_date = Time.now
+    new_ticket_report = TicketReport.create(capacity: total_tickets)
 
-      format = Report.formats[ticket_params[:format]&.downcase]
+    current_date = Time.now
 
-      new_report = new_ticket_report.create_report(
-        event_id: ticket_params[:event_id],
-        format: format,
-        sold_tickets: sold_tickets,
-        date: current_date,
-      )
+    format = Report.formats[ticket_params[:format]&.downcase]
 
-      puts new_report.inspect
+    new_report = new_ticket_report.create_report(
+      event_id: ticket_params[:event_id],
+      format: format,
+      sold_tickets: sold_tickets,
+      date: current_date,
+    )
 
-      log = new_ticket_report.report.report_logs.create(status: :created, user_id: ticket_params[:user_id])
-      case ticket_params[:format]&.downcase
-      when "json"
-        {
-        id: new_ticket_report.id,
-        total_tickets: new_ticket_report.capacity,
-        event_id: new_report.event_id,
-        format: new_report.format,
-        sold_tickets: new_report.sold_tickets,
-        date: new_report.date,
-        created_at: current_date
-            }
-      when "pdf"
-        pdf_data = generate_pdf(new_ticket_report, new_report)
+    new_ticket_report.report.report_logs.create(status: :created, user_id: ticket_params[:user_id])
+    case ticket_params[:format]&.downcase
+    when "json"
+      {
+      id: new_ticket_report.id,
+      total_tickets: new_ticket_report.capacity,
+      event_id: new_report.event_id,
+      format: new_report.format,
+      sold_tickets: new_report.sold_tickets,
+      date: new_report.date,
+      created_at: current_date
+          }
+    when "pdf"
+      pdf_data = generate_pdf(new_ticket_report, new_report)
 
-        {
-          ticket_report: {
-            id: new_ticket_report.id,
-            total_tickets: new_ticket_report.capacity,
-            event_id: new_report.event_id,
-            format: new_report.format,
-            sold_tickets: new_report.sold_tickets,
-            date: new_report.date,
-            created_at: new_report.created_at
-          },
-          pdf_data: pdf_data
-        }
-      when "csv"
-        {
-        success: true,
-        ticket_report: new_ticket_report,
-        report: new_report,
-        csv_data: generate_csv(new_ticket_report, new_report) # Generar CSV
+      {
+        ticket_report: {
+          id: new_ticket_report.id,
+          total_tickets: new_ticket_report.capacity,
+          event_id: new_report.event_id,
+          format: new_report.format,
+          sold_tickets: new_report.sold_tickets,
+          date: new_report.date,
+          created_at: new_report.created_at
+        },
+        pdf_data: pdf_data
       }
-      end
-    else
-      raise "Event not found"
+    when "csv"
+      {
+      success: true,
+      ticket_report: new_ticket_report,
+      report: new_report,
+      csv_data: generate_csv(new_ticket_report, new_report) # Generar CSV
+    }
     end
   end
 
