@@ -106,7 +106,7 @@ class TicketsService
   end
 
   def self.get_ticket_summary(event_id)
-    uri = URI.parse("#{ENV.fetch("TICKETS_DOMAIN_PORT")}/events/#{event_id}/tickets/summary")
+    uri = URI.parse("#{ENV.fetch("TICKET_URL")}/events/#{event_id}/tickets/summary")
     response_tkts = Net::HTTP.get_response(uri)
     JSON.parse(response_tkts.body)
   end
