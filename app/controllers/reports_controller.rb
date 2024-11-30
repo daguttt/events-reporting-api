@@ -1,6 +1,16 @@
 class ReportsController < ApplicationController
-  # @summary Creates an attendance or ticket report
-  # @tags Reports
+  # @summary Create a report
+  # @tags reports
+  # @request_body Create a report. Needs to include`user_id | format | type`. [!Report]
+  # @request_body_example basic user [Hash] {"user_id": 1,"format": "pdf","type": "attendance//ticket" }
+  # @response event_id not found (404) [Hash{succes: Boolean, message: String}]
+  # @response_example Placeholder (404) [{"success": false, "message": "Event not found"}]
+
+  # @response Return different types of responses depending on the format you choose. If you choose pdf or csv, the response creates a file; if json is chosen, the full response (200) [Hash{success: Boolean, message: String, data: Hash{id: Integer, total_tickets: Integer, event_id: Integer, format: String, sold_tickets: Integer, date: DateTime, created_at: DateTime }}]
+  # @response_example Placeholder (200) [{"success": true, message: "Report and Attendance Report created successfully", data: {id: 21, total_tickets: 100, event_id: 1, format: "json", sold_tickets: 70, date: "2024-11-28T18:28:27.887Z", created_at: "2024-11-28T18:28:27.903Z" }}]
+
+  # @response Invalid report type (400) [Hash{error: String}]
+  # @response_example Placeholder (400) [{ error: "invalid report type" }]
   def create
     type = params[:type]
     case type
@@ -70,59 +80,48 @@ class ReportsController < ApplicationController
   def get_history
   end
 
-  def delete
-    event_id = 1
-    # Loop through all jobs in the Scheduled Set
-    Sidekiq::ScheduledSet.new.each do |job|
-      # Check if the job's arguments match the ones you're looking for
-      if job.args[0] == event_id
-        # Found a matching job, so you can delete it
-        job.delete
-        logger.info("Job with JID #{job.jid} has been deleted. Event ID: #{event_id}")
-        return job.jid  # Optionally return the JID for reference
-      end
-    end
-  end
-
-
   # @summary Schedule the generation of a report
   # @tags Reports
+  # @request_body The parameters for scheduling a report [!Hash{ frequency: String, user_id: Integer, format: String, report: Hash}]
+  # @request_body_example A complete request to schedule a report [Hash] { frequency: "daily", user_id: 2, format: "pdf", report: {}}
+
+  # @response Event not found (404) [Hash{success: Boolean, message: String}]
+  # @response_example event not found (404) [{ success: false, message: "Event not found" }]
+
+  # @response Invalid frequency (422) [Hash{success: Boolean, message: String}]
+  # @response_example invalid frequency (422) [{ success: false, message: "Invalid frequency" }]
+
+  # @response Report scheduled successfully (200) [Hash{success: Boolean, message: String}]
+  # @response_example scheduled successfully (200) [{ success: true, message: "Report scheduled successfully" }]
+
   def schedule
-    event_id = 1
-    frequency = "weekly"
-
+    event_id = schedule_report_params[:event_id]
+    frequency = schedule_report_params[:frequency]
+    format = schedule_report_params[:format]
     # Check if the event exists
-    # event = Event.find_by(id: event_id)
-    # unless event
-    #   render json: { error: "Event not found" }, status: :not_found
-    #   return
-    # end
-
-    # # Check if the frequency is valid
-    # unless %w[daily weekly monthly].include?(frequency)
-    #   render json: { error: "Invalid frequency" }, status: :unprocessable_entity
-    #   return
-    # end
-
-    case frequency
-
-    when "daily"
-      # Schedule the job to run again every day at the same time (i.e., 24 hours later).
-      ReportSchedulerJob.perform_async(event_id, "daily")
-    when "weekly"
-      # Schedule the job to run again every week at the same day and time.
-      ReportSchedulerJob.perform_async(event_id, "weekly")
-    when "monthly"
-      # Schedule the job to run again every month at the same day and time.
-      ReportSchedulerJob.perform_async(event_id, "monthly")
-    else
-      # Handle the case where an unsupported frequency is passed
-      logger.error("Unsupported frequency: #{frequency} for event ID #{event_id}. Job will not be rescheduled.")
+    event = EventsService.find_by_id(event_id)
+    unless event
+      render json: { error: "Event not found" }, status: :not_found
+      return
     end
+
+    # Check if the frequency is valid
+    unless %w[daily weekly monthly].include?(frequency)
+      render json: { error: "Invalid frequency" }, status: :unprocessable_entity
+      return
+    end
+
+    ReportSchedulerJob.perform_async(event_id, frequency, format)
+    render json: { success: true, message: "Report scheduled successfully" }, status: :ok
   end
 
   private
   def report_params
     params.permit(:type, :user_id, :format, :event_id, report: [ :format ])
+  end
+
+  def schedule_report_params
+    params.require([ :event_id, :frequency, :user_id, :format ])
+    params.permit(:event_id, :frequency, :user_id, :format, report: {})
   end
 end
