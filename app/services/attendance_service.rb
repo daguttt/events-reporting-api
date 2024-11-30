@@ -9,8 +9,9 @@ class AttendanceService
     user_id = params[:user_id]
     summary = get_attendance_summary(event_id: event_id)
     sold_tickets = summary["true_attendees"] + summary["false_attendees"]
-    percentage = summary["true_attendees"] * 100 / sold_tickets
-    if EventsService.find_by_id(event_id) != nil
+    percentage = sold_tickets == 0 ? 0 : summary["true_attendees"] * 100 / sold_tickets
+    found_event = EventsService.find_by_id(event_id)
+    if found_event != nil
       attendance_report = AttendanceReport.create(percentage: percentage)
       attendance_report.create_report(
         date: Time.now,
