@@ -11,10 +11,10 @@ class EventsService
       end
     rescue SocketError
       Rails.logger.error("Could not connect to the monolith")
-      nil
+      return nil
     rescue Net::OpenTimeout, Net::ReadTimeout
       Rails.logger.error("Timeout error: Could not connect to the monolith")
-      nil
+      return nil
     end
 
     return nil if response.nil? || response.is_a?(Net::HTTPNotFound)
