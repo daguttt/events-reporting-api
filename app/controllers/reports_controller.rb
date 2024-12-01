@@ -84,7 +84,6 @@ class ReportsController < ApplicationController
 
   # @response Report scheduled successfully (200) [Hash{success: Boolean, message: String}]
   # @response_example scheduled successfully (200) [{ success: true, message: "Report scheduled successfully" }]
-
   def schedule
     event_id = schedule_report_params[:event_id]
     frequency = schedule_report_params[:frequency]
