@@ -135,44 +135,6 @@ class ReportsController < ApplicationController
       else
         { message: "Format not supported" }
       end
-
-
-    end
-  end
-
-  # @summary Schedule the generation of a report
-  # @tags Reports
-  def schedule
-    event_id = 1
-    frequency = "weekly"
-
-    # Check if the event exists
-    # event = Event.find_by(id: event_id)
-    # unless event
-    #   render json: { error: "Event not found" }, status: :not_found
-    #   return
-    # end
-
-    # # Check if the frequency is valid
-    # unless %w[daily weekly monthly].include?(frequency)
-    #   render json: { error: "Invalid frequency" }, status: :unprocessable_entity
-    #   return
-    # end
-
-    case frequency
-
-    when "daily"
-      # Schedule the job to run again every day at the same time (i.e., 24 hours later).
-      ReportSchedulerJob.perform_async(event_id, "daily")
-    when "weekly"
-      # Schedule the job to run again every week at the same day and time.
-      ReportSchedulerJob.perform_async(event_id, "weekly")
-    when "monthly"
-      # Schedule the job to run again every month at the same day and time.
-      ReportSchedulerJob.perform_async(event_id, "monthly")
-    else
-      # Handle the case where an unsupported frequency is passed
-      logger.error("Unsupported frequency: #{frequency} for event ID #{event_id}. Job will not be rescheduled.")
     end
   end
 
