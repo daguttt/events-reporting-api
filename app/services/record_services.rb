@@ -36,7 +36,7 @@ class RecordServices
         data = GenerateFilesServices.generate_pdf("tickets", report, event)
       end
     when "csv"
-      puts "generando csv"
+      Rails.logger.info "generando csv"
       if type == "AttendanceReport"
         data = GenerateFilesServices.generate_csv("attendance", report, event)
       elsif type == "TicketReport"

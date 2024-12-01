@@ -6,7 +6,7 @@ class GenerateFilesServices
   def self.generate_pdf(type, report, event)
     Prawn::Document.new do |pdf|
       if type== "tickets"
-        puts "generando pdf"
+        Rails.logger.info "generando pdf"
         pdf.text "Ticket Report", size: 20, style: :bold
         pdf.move_down 20
 
@@ -52,9 +52,7 @@ class GenerateFilesServices
   end
 
   def self.generate_csv(type, report, event)
-    puts "HOLAAAAAAAAAAAAAAAAaa"
     CSV.generate(headers: true) do |csv|
-      puts type
       if type== "tickets"
         csv << [ "Ticket Report ID", "Total Tickets", "Event ID", "Format", "Sold Tickets", "Date", "Created At" ]
 
@@ -70,7 +68,6 @@ class GenerateFilesServices
       elsif type=="attendance"
         csv << [ "NAME", "DATE", "SOLD TICKETS", "TRUE ATTENDANCE", "FALSE ATTENDANCE", "PERCENTAGE" ]
         csv << [ report.reportable.id, event["id"], event["name"], report.date, report.sold_tickets, report.reportable.true_attendees, report.reportable.false_attendees, report.reportable.percentage ]
-
       end
     end
   end

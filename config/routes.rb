@@ -1,3 +1,5 @@
+require "sidekiq/web"
+
 Rails.application.routes.draw do
   get "/" => redirect("/docs")
 
@@ -14,6 +16,8 @@ Rails.application.routes.draw do
   get "/reports/history" => "reports#get_reports", as: :event_record_reports
   get "/reports/:report_id/user/:user_id" => "reports#inspect_report"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  mount Sidekiq::Web => "/sidekiq" # mount Sidekiq::Web in your Rails app
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
