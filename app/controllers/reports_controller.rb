@@ -12,18 +12,18 @@ class ReportsController < ApplicationController
   # @response Invalid report type (400) [Hash{error: String}]
   # @response_example Placeholder (400) [{ error: "invalid report type" }]
   def create
-    type = params[:type]
+    type = create_report_params[:type]
 
     case type
     when "attendance"
-      data = AttendanceService.create_report(report_params)
+      data = AttendanceService.create_report(create_report_params)
     when "tickets"
-      data = TicketsService.create_report(report_params)
+      data = TicketsService.create_report(create_report_params)
     else
       render json: { error: "Type '#{type}' not allowed" }, status: :unprocessable_entity
       return
     end
-    format = params[:format]&.downcase&.to_sym
+    format = create_report_params[:format]&.downcase&.to_sym
     case format
     when :pdf
       send_data(
@@ -108,8 +108,8 @@ class ReportsController < ApplicationController
   # @summary Get a report with id and generate the file report
   # @tags History
   def inspect_report
-    report_id = params[:report_id]
-    user_id = params[:user_id]
+    report_id = report_params[:report_id]
+    user_id = report_params[:user_id]
     report = Report.find_by(id: report_id)
     format = report.format&.downcase
     result = RecordServices.inspect_report(report, user_id, format)
@@ -139,8 +139,13 @@ class ReportsController < ApplicationController
   end
 
   private
+  def create_report_params
+    params.permit(:type, :user_id, :format, :event_id, report: {})
+  end
+
   def report_params
-    params.permit(:type, :user_id, :format, :event_id, report: [ :format ])
+    params.require([ :report_id, :user_id ])
+    params.permit(:user_id, :report_id, report: {})
   end
 
   def schedule_report_params
