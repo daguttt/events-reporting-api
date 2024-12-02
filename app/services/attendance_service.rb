@@ -11,7 +11,11 @@ class AttendanceService
     percentage = sold_tickets == 0 ? 0 : summary["true_attendees"] * 100 / sold_tickets
     found_event = EventsService.find_by_id(event_id)
     if found_event != nil
-      attendance_report = AttendanceReport.create(percentage: percentage)
+      attendance_report = AttendanceReport.create(
+        percentage: percentage,
+        true_attendees: summary["true_attendees"],
+        false_attendees: summary["false_attendees"]
+      )
       attendance_report.create_report(
         date: Time.now,
         event_id: event_id,
