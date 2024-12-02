@@ -1,6 +1,7 @@
 require "net/http"
 require "csv"
 class AttendanceService
+  ATTENDANCE_URL = ENV.fetch("ATTENDANCE_URL")
   def self.create_report(params)
     event_id = params[:event_id]
     format = params[:format]
