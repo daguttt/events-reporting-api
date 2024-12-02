@@ -105,8 +105,9 @@ class ReportsController < ApplicationController
     render json: { success: true, message: "Report scheduled successfully" }, status: :ok
   end
 
-  # @summary Get a report with id and generate the file report
-  # @tags History
+  # @summary Get a report by id
+  # @tags Reports
+  # @parameter user_id(query) [Integer] The id of the admin user who wants to review the report
   def inspect_report
     report_id = report_params[:report_id]
     user_id = report_params[:user_id]
