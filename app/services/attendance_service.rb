@@ -27,9 +27,9 @@ class AttendanceService
 
       case format
       when "pdf"
-        { pdf_data: GenerateFilesServices.generate_pdf("attendance", report, event) }
+        { pdf_data: GenerateFilesServices.generate_pdf("attendance", attendance_report.report, found_event) }
       when "csv"
-        { csv_data: GenerateFilesServices.generate_csv("attendance", report, event) }
+        { csv_data: GenerateFilesServices.generate_csv("attendance", attendance_report.report, found_event) }
       when "json"
         generate_json(event, sold_tickets, summary, percentage, attendance_report)
       end
