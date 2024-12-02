@@ -12,72 +12,63 @@ class ReportsController < ApplicationController
   # @response Invalid report type (400) [Hash{error: String}]
   # @response_example Placeholder (400) [{ error: "invalid report type" }]
   def create
-    type = params[:type]
+    type = create_report_params[:type]
+
     case type
     when "attendance"
-      data = AttendanceService.create_report(report_params)
-      case params[:format]&.downcase
-      when "pdf"
-        send_data(
-            data,
-            filename: "attendance_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
-            type: "application/pdf",
-            disposition: "attachment"
-          )
-
-      when "csv"
-        send_data(
-            data,
-            filename: "attendance_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.csv",
-            type: "text/csv",
-            disposition: "attachment"
-          )
-      when "json"
-        render json: {
-        success: true,
-        message: "Report and Attendance Report created successfully",
-        data: {
-            attendance_report: data
-          }
-        }
-      end
+      data = AttendanceService.create_report(create_report_params)
     when "tickets"
-      data = TicketsService.create_report(report_params)
-      case params[:format]&.downcase
-      when "pdf"
-        send_data(
-            data[:pdf_data], # Aquí se usa el contenido generado por el servicio
-            filename: "ticket_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
-            type: "application/pdf",
-            disposition: "attachment"
-          )
-
-      when "csv"
-        send_data(
-            data[:csv_data], # Aquí se usa el contenido generado por el servicio
-            filename: "ticket_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.csv",
-            type: "text/csv",
-            disposition: "attachment"
-          )
-      when "json"
-        render json: {
-        success: true,
-        message: "Report and Ticket Report created successfully",
-        data: {
-            ticket_report: data
-          }
+      data = TicketsService.create_report(create_report_params)
+    else
+      render json: { error: "Type '#{type}' not allowed" }, status: :unprocessable_entity
+      return
+    end
+    format = create_report_params[:format]&.downcase&.to_sym
+    case format
+    when :pdf
+      send_data(
+        data[:pdf_data],  # El contenido del PDF generado
+        filename: "#{type}_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
+        type: "application/pdf",
+        disposition: "attachment"
+      )
+    when :csv
+      send_data(
+      data[:csv_data],
+      filename: "#{type}_report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
+      type: "text/csv",
+      disposition: "attachment"
+      )
+    when :json
+      render json: {
+      success: true,
+      message: "Report and #{type} Report created successfully",
+      data: {
+          report: data
         }
-      end
+      }
+
     else
       render json: {
-        error: "invalid report type"
-      }, status: :bad_request
+        success: false,
+        message: "Unsupported format",
+        data: {}
+      }, status: :unprocessable_entity
     end
   end
 
   # @summary Get an event's reports history
   # @tags Reports
-  def get_history
+  def get_logs
+    logs = RecordServices.get_logs
+    render json: logs, status: :ok
+  end
+
+  # @summary Get reports history
+  # @tags History
+  def get_reports
+    reports = RecordServices.get_reports
+    render json: reports, status: :ok
   end
 
   # @summary Schedule the generation of a report
@@ -93,7 +84,6 @@ class ReportsController < ApplicationController
 
   # @response Report scheduled successfully (200) [Hash{success: Boolean, message: String}]
   # @response_example scheduled successfully (200) [{ success: true, message: "Report scheduled successfully" }]
-
   def schedule
     event_id = schedule_report_params[:event_id]
     frequency = schedule_report_params[:frequency]
@@ -115,9 +105,48 @@ class ReportsController < ApplicationController
     render json: { success: true, message: "Report scheduled successfully" }, status: :ok
   end
 
+  # @summary Get a report by id
+  # @tags Reports
+  # @parameter user_id(query) [Integer] The id of the admin user who wants to review the report
+  def inspect_report
+    report_id = report_params[:report_id]
+    user_id = report_params[:user_id]
+    report = Report.find_by(id: report_id)
+    format = report.format&.downcase
+    result = RecordServices.inspect_report(report, user_id, format)
+    if result[:error]
+      render json: { error: result[:error] }, status: :not_found
+    else
+      if format == "pdf"
+        send_data(
+        result[:data],
+        filename: "report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
+        type: "application/pdf",
+        disposition: "attachment"
+      )
+      elsif format == "csv"
+        send_data(
+        result[:data],
+        filename: "report_#{Time.now.strftime('%Y%m%d%H%M%S')}.pdf",
+        type: "text/csv",
+        disposition: "attachment"
+        )
+      elsif format == "json"
+
+      else
+        { message: "Format not supported" }
+      end
+    end
+  end
+
   private
+  def create_report_params
+    params.permit(:type, :user_id, :format, :event_id, report: {})
+  end
+
   def report_params
-    params.permit(:type, :user_id, :format, :event_id, report: [ :format ])
+    params.require([ :report_id, :user_id ])
+    params.permit(:user_id, :report_id, report: {})
   end
 
   def schedule_report_params
